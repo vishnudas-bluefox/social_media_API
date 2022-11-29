@@ -3,7 +3,7 @@
 from rest_framework import serializers
 
 #import the models here
-from .models import user
+from .models import user,user_table
 
 class userserializer(serializers.ModelSerializer):
     class Meta:
@@ -21,3 +21,7 @@ class userserializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+class user_table_serializer(serializers.ModelSerializer):
+    class Meta:
+        model = user_table
+        fields = ['user_id','bio','no_followers','no_following','no_post']

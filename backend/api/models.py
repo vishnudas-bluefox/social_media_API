@@ -11,3 +11,15 @@ class user(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+
+class user_table(models.Model):
+    user_id= models.IntegerField(default=0)
+    bio = models.CharField(max_length=250,default="None")
+    no_followers = models.IntegerField(default=0)
+    no_following = models.IntegerField(default=0)
+    no_post = models.IntegerField(default=0)
+
+class followers(models.Model):
+    user_id = models.CharField(max_length=1000)
+    follower_id= models.CharField(max_length=1000)
