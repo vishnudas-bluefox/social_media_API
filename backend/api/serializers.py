@@ -3,7 +3,7 @@
 from rest_framework import serializers
 
 #import the models here
-from .models import user,user_table
+from .models import user,user_table,following
 
 class userserializer(serializers.ModelSerializer):
     class Meta:
@@ -25,3 +25,8 @@ class user_table_serializer(serializers.ModelSerializer):
     class Meta:
         model = user_table
         fields = ['user_id','bio','no_followers','no_following','no_post']
+
+class following_serializers(serializers.ModelSerializer):
+    class Meta:
+        model=following
+        fields=['user_id','follower_id']

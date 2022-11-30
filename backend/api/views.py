@@ -10,9 +10,9 @@ from rest_framework.exceptions import AuthenticationFailed
 import jwt
 import datetime
 #import serializers
-from .serializers import userserializer,user_table_serializer
+from .serializers import userserializer,user_table_serializer,following_serializers
 #import teh models for performing atcions
-from .models import user,user_table
+from .models import user,user_table,following
 
 
 # Create your views here.
@@ -46,7 +46,7 @@ class registerview(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         serializer2_data={
-            "user_id":serializer.data[id]
+            "user_id":serializer.data['id']
         }
         serializer2 = user_table_serializer(data =serializer2_data)
         serializer2.is_valid(raise_exception=True)
@@ -147,6 +147,59 @@ class user_information(APIView):
 user_information = user_information.as_view()
 
 
+#Follow another user
+#
+class follow_user(APIView):
+    def post(self,request):
+        token = request.COOKIES.get('token')
+
+        if not token:
+            raise AuthenticationFailed("Unauthenticated no cookies found login again")
+        try:
+            payload =  jwt.decode(token,'secret',algorithms='HS256')
+        except jwt.ExpiredSignature:
+            raise AuthenticationFailed("The cookies Expired create new one")
+
+
+        data = {}
+        data['user_id'] = payload['id']
+        data['follower_id'] = request.data['follower_id']
+
+
+        print("Data: ",data)
+        #adding ids to followers table
+        try:
+            #check the the person already follow or not
+            exist_detail = following.objects.filter(user_id=data['user_id'],follower_id=data['follower_id']).all().values()
+            if(len(exist_detail) is not 0):
+                return Response("you already follow the user \n try different ID")
+
+            serializer = following_serializers(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            print("Values added to following table")
+        except:
+            print("values not added tofollowing table error")
+
+        #incrementing following count in user_table of the follower
+        user_detail= user_table.objects.filter(user_id=data['user_id']).first()
+        user_detail.no_following =user_detail.no_following+1
+        user_detail.save()
+        serializer2 = user_table_serializer(user_detail)
+
+        #incrementing following count in user_table of followed person
+        followed_user_detail = user_table.objects.filter(user_id=data['follower_id']).first()
+        followed_user_detail.no_followers = followed_user_detail.no_followers+1
+        followed_user_detail.save()
+        serializer3 = user_table_serializer(followed_user_detail)
+        response = {
+            "follower":serializer2.data,
+            "followed":serializer3.data
+        }
+        return Response(response)
+
+
+follow_user = follow_user.as_view()
 
 
 #delete all objects from table

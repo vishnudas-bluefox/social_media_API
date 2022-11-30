@@ -9,4 +9,5 @@ urlpatterns = [
     path('userview/',views.userview),      #http://localhost:8000/api/userview/
     path('profiledata/',views.user_information), #http://localhost:8000/api/profiledata/
     path('deleteall/',views.delete_objects), #http://localhost:8000/api/deleteall/
+    path('follow/',views.follow_user), #http://localhost:8000/api/follow/
 ]

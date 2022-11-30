@@ -23,3 +23,6 @@ class user_table(models.Model):
 class followers(models.Model):
     user_id = models.CharField(max_length=1000)
     follower_id= models.CharField(max_length=1000)
+class following(models.Model):
+    user_id = models.CharField(max_length=1000)
+    follower_id= models.CharField(max_length=1000)
