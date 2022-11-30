@@ -1,7 +1,7 @@
 # Social_media_API
 A general purpose social media API for all kind of social media developments
 
-Build with :
+API Development :
 * Python
 * Django
 * RestFramework
