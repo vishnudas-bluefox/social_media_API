@@ -45,5 +45,5 @@ The user id will retrive from the cookies. The user details such as no_followers
 
 ### POST api/posts/ create new post by validating the user 
 ```
-http://localhost:8000/api/user/
+http://localhost:8000/api/post/
 ```
