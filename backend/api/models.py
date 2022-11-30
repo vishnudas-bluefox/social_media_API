@@ -20,9 +20,19 @@ class user_table(models.Model):
     no_following = models.IntegerField(default=0)
     no_post = models.IntegerField(default=0)
 
+#removed table
 class followers(models.Model):
     user_id = models.CharField(max_length=1000)
     follower_id= models.CharField(max_length=1000)
 class following(models.Model):
     user_id = models.CharField(max_length=1000)
     follower_id= models.CharField(max_length=1000)
+
+#creating post for by user
+class post(models.Model):
+    user_id=models.IntegerField(default=0)
+    title = models.CharField(max_length=150)
+    description= models.CharField(max_length=10000)
+    no_like = models.IntegerField(default=0)
+    no_comments = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)

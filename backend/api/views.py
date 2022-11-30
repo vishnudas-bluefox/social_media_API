@@ -11,8 +11,9 @@ import jwt
 import datetime
 #import serializers
 from .serializers import userserializer,user_table_serializer,following_serializers
+from .serializers import post_serializers
 #import teh models for performing atcions
-from .models import user,user_table,following
+from .models import user,user_table,following,post
 
 
 # Create your views here.
@@ -232,6 +233,7 @@ class unfollow_user(APIView):
         user_detail.save()
         serializer2 = user_table_serializer(user_detail)
 
+
         #incrementing following count in user_table of followed person
         followed_user_detail = user_table.objects.filter(user_id=data['follower_id']).first()
         followed_user_detail.no_followers = followed_user_detail.no_followers-1
@@ -248,6 +250,39 @@ class unfollow_user(APIView):
         return Response(response)
 
 unfollow_user = unfollow_user.as_view()
+
+
+
+#create new post
+class create_post(APIView):
+    def post(self,request):
+        token = request.COOKIES.get('token')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated no cookies found login again")
+        try:
+            payload =  jwt.decode(token,'secret',algorithms='HS256')
+        except jwt.ExpiredSignature:
+            raise AuthenticationFailed("The cookies Expired create new one")
+
+
+        data={}
+        data['user_id'] = payload['id']
+        data['title'] = request.data['title']
+        data['description'] = request.data['description']
+
+        serializer =post_serializers(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        #add post count inthe profile table
+        user_detail = user_table.objects.filter(user_id=data['user_id']).first()
+        user_detail.no_post = user_detail.no_post+1
+        user_detail.save()
+
+        return Response(serializer.data)
+
+post = create_post.as_view()
+
 
 #delete all objects from table
 @api_view(['GET'])
