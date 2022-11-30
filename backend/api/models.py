@@ -41,3 +41,8 @@ class post(models.Model):
 class like(models.Model):
     post_id = models.IntegerField(default=0)
     user_id = models.IntegerField(default=0)
+
+class comment_table(models.Model):
+    post_id= models.IntegerField(default=0)
+    user_id=models.IntegerField(default=0)
+    comment=models.CharField(max_length=250)

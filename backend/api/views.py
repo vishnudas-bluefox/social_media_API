@@ -12,10 +12,10 @@ import jwt
 import datetime
 #import serializers
 from .serializers import userserializer,user_table_serializer,following_serializers,like_serializer
-from .serializers import post_serializers
+from .serializers import *
 #import teh models for performing atcions
 from .models import user,user_table,following,post,like
-
+from .models import *
 
 # Create your views here.
 
@@ -385,6 +385,28 @@ class post_data_view(APIView):
 
 post_data = post_data_view.as_view()
 
+
+#create comment for posts
+
+class create_comment(APIView):
+    def post(self,request):
+        token = request.COOKIES.get('token')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated no cookies found login again")
+        try:
+            payload =  jwt.decode(token,'secret',algorithms='HS256')
+        except jwt.ExpiredSignature:
+            raise AuthenticationFailed("The cookies Expired create new one")
+        data = {}
+        data['post_id'] = request.data["post_id"]
+        data['user_id'] = payload['id']
+        data['comment'] = request.data['comment']
+        serializer = comment_serializer(data=data)
+        serializer.is_valid()
+        serializer.save()
+        return Response(serializer.data)
+
+comment = create_comment.as_view()
 
 #delete all objects from table
 @api_view(['GET'])

@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 #import the models here
 from .models import user,user_table,following,post,like
-
+from .models import *
 class userserializer(serializers.ModelSerializer):
     class Meta:
         model = user
@@ -41,3 +41,10 @@ class like_serializer(serializers.ModelSerializer):
     class Meta:
         model= like
         fields=['post_id','user_id']
+
+
+
+class comment_serializer(serializers.ModelSerializer):
+    class Meta:
+        model = comment_table
+        fields =['id','post_id','user_id','comment']
