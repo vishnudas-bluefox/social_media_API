@@ -3,7 +3,7 @@ A general purpose social media API for all kind of social media developments
 
 Build with :
 * Python
-* Djnago
+* Django
 * RestFramework
 
 Database:
