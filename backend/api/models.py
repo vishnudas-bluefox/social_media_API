@@ -36,3 +36,8 @@ class post(models.Model):
     no_like = models.IntegerField(default=0)
     no_comments = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+
+#creating like database
+class like(models.Model):
+    post_id = models.IntegerField(default=0)
+    user_id = models.IntegerField(default=0)

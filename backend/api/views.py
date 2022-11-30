@@ -2,6 +2,7 @@ from django.shortcuts import render
 
 from django.http import JsonResponse
 #importing rest framework
+from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,10 +11,10 @@ from rest_framework.exceptions import AuthenticationFailed
 import jwt
 import datetime
 #import serializers
-from .serializers import userserializer,user_table_serializer,following_serializers
+from .serializers import userserializer,user_table_serializer,following_serializers,like_serializer
 from .serializers import post_serializers
 #import teh models for performing atcions
-from .models import user,user_table,following,post
+from .models import user,user_table,following,post,like
 
 
 # Create your views here.
@@ -168,7 +169,7 @@ class follow_user(APIView):
         #adding ids to followers table
         try:
             #check the the person already follow or not
-            exist_detail = following.objects.filter(user_id=data['user_id'],follower_id=data['follower_id']).all().values()
+            exist_detail = following.objects.filter(user_id=data['user_id'],foll2ower_id=data['follower_id']).all().values()
             if(len(exist_detail) is not 0):
                 return Response("you already follow the user \n try different ID")
 
@@ -282,6 +283,58 @@ class create_post(APIView):
         return Response(serializer.data)
 
 post = create_post.as_view()
+
+#delete the post by post ID
+@api_view(['DELETE'])
+def delete_post(APIView):
+    def delete(self,request):
+        print(request.data)
+        token = request.COOKIES.get('token')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated no cookies found login again")
+        try:
+            payload =  jwt.decode(token,'secret',algorithms='HS256')
+        except jwt.ExpiredSignature:
+            raise AuthenticationFailed("The cookies Expired create new one")
+
+        try:
+            post_detail = post.objects.filter(id=request.data['id']).delete()
+            print("Successfully deleted")
+            return Response({"Message":"successfully deleted"})
+        except Exception as err:
+            return Response({"Error":err})
+
+
+# like the post
+class like_post(APIView):
+    def post(self,request):
+        token = request.COOKIES.get('token')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated no cookies found login again")
+        try:
+            payload =  jwt.decode(token,'secret',algorithms='HS256')
+        except jwt.ExpiredSignature:
+            raise AuthenticationFailed("The cookies Expired create new one")
+
+        data = {}
+        data['user_id']=payload['id']
+        data['post_id']=request.data['post_id']
+        print("Data",data)
+
+        try:
+            exist_data = like.objects.filter(user_id=data['user_id'],post_id=data['post_id']).all()
+            if(len(exist_data) is not 0):
+                return Response({"Message":"Already Liked"})
+        except:
+            pass
+        #add post details
+        serializer = like_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        print(serializer.data)
+        return Response({"Message":"success"})
+
+like_post = like_post.as_view()
 
 
 #delete all objects from table

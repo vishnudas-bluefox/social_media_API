@@ -11,6 +11,7 @@ urlpatterns = [
     path('deleteall/',views.delete_objects), #http://localhost:8000/api/deleteall/
     path('follow/',views.follow_user), #http://localhost:8000/api/follow/
     path('unfollow/',views.unfollow_user), #http://localhost:8000/api/unfollow
-    path('post/',views.post) #http://localhost:8000/api/post
+    path('post/',views.post), #http://localhost:8000/api/post
+    path('like/',views.like_post) #http://localhost:8000/api/like
 
 ]
