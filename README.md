@@ -3,7 +3,7 @@ A general purpose social media API for all kind of social media developments
 
 Build with :
 * Python
-* Djnago
+* Django
 * RestFramework
 
 Database:
@@ -44,4 +44,10 @@ http://localhost:8000/api/user/
 The user id will retrive from the cookies. The user details such as no_followers and following will also return back
 
 ### POST api/posts/ create new post by validating the user 
-
+```
+http://localhost:8000/api/post/
+```
+### POST api/like/ to like the posts
+```
+http://localhost:8000/api/like/
+```
