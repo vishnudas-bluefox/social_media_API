@@ -164,9 +164,6 @@ class follow_user(APIView):
         data = {}
         data['user_id'] = payload['id']
         data['follower_id'] = request.data['follower_id']
-
-
-        print("Data: ",data)
         #adding ids to followers table
         try:
             #check the the person already follow or not
@@ -202,9 +199,60 @@ class follow_user(APIView):
 follow_user = follow_user.as_view()
 
 
+#unfollow the users
+class unfollow_user(APIView):
+     def post(self,request):
+        token = request.COOKIES.get('token')
+
+        if not token:
+            raise AuthenticationFailed("Unauthenticated no cookies found login again")
+        try:
+            payload =  jwt.decode(token,'secret',algorithms='HS256')
+        except jwt.ExpiredSignature:
+            raise AuthenticationFailed("The cookies Expired create new one")
+
+        data={}
+        data["user_id"]=payload['id']
+        data['follower_id'] = request.data['follower_id']
+        try:
+            #check the the person already follow or not
+            exist_detail = following.objects.filter(user_id=data['user_id'],follower_id=data['follower_id']).all().values()
+            print(exist_detail)
+            if(len(exist_detail) is 0):
+                return Response("you are not following the user")
+            following.objects.filter(user_id=data['user_id'],follower_id=data['follower_id']).delete()
+        except Exception as e:
+            return Response({"error":e})
+
+
+        #decrement the number in user_table
+        #incrementing following count in user_table of the follower
+        user_detail= user_table.objects.filter(user_id=data['user_id']).first()
+        user_detail.no_following =user_detail.no_following-1
+        user_detail.save()
+        serializer2 = user_table_serializer(user_detail)
+
+        #incrementing following count in user_table of followed person
+        followed_user_detail = user_table.objects.filter(user_id=data['follower_id']).first()
+        followed_user_detail.no_followers = followed_user_detail.no_followers-1
+        followed_user_detail.save()
+        serializer3 = user_table_serializer(followed_user_detail)
+
+
+        response = {
+            "follower":serializer2.data,
+            "followed":serializer3.data,
+            "Message":"Succesfully unfollowed the user"
+        }
+
+        return Response(response)
+
+unfollow_user = unfollow_user.as_view()
+
 #delete all objects from table
 @api_view(['GET'])
 def delete_objects(self):
     user.objects.all().delete()
     user_table.objects.all().delete()
+    following.objects.all().delete()
     return Response({"Message":"deletion completed"})

@@ -10,4 +10,6 @@ urlpatterns = [
     path('profiledata/',views.user_information), #http://localhost:8000/api/profiledata/
     path('deleteall/',views.delete_objects), #http://localhost:8000/api/deleteall/
     path('follow/',views.follow_user), #http://localhost:8000/api/follow/
+    path('unfollow/',views.unfollow_user) #http://localhost:8000/api/unfollow
+
 ]
