@@ -47,11 +47,15 @@ The user id will retrive from the cookies. The user details such as no_followers
 ```
 http://localhost:8000/api/post/
 ```
-### POST api/like/ to like the posts
+### POST api/like/  to like the posts
 ```
 http://localhost:8000/api/like/
 ```
-### POST api/dislike/ to dislike the posts
+### POST api/dislike/  to dislike
 ```
 http://localhost:8000/api/dislike/
+```
+### POST api/comment/  create comments 
+```
+http://localhost:8000/api/comment/
 ```
