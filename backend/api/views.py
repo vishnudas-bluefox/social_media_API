@@ -142,7 +142,7 @@ class user_information(APIView):
         #if not user_detail.check_password(payload['password']):
             #raise AuthenticationFailed("The jwt token malfunctioned create new one and try again")
 
-        user_table_detail = user_table.objects.filter(id=1).first()
+        user_table_detail = user_table.objects.filter(id=request.data['id']).first()
         serializer = user_table_serializer(user_table_detail)
         return Response(serializer.data)
 
@@ -335,6 +335,55 @@ class like_post(APIView):
         return Response({"Message":"success"})
 
 like_post = like_post.as_view()
+
+
+# dislike the post
+class dislike_post(APIView):
+    def post(self,request):
+        token = request.COOKIES.get('token')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated no cookies found login again")
+        try:
+            payload =  jwt.decode(token,'secret',algorithms='HS256')
+        except jwt.ExpiredSignature:
+            raise AuthenticationFailed("The cookies Expired create new one")
+
+        data = {}
+        data['user_id']=payload['id']
+        data['post_id']=request.data['post_id']
+        print("Data",data)
+
+        try:
+            exist_data = like.objects.filter(user_id=data['user_id'],post_id=data['post_id']).all()
+            if(len(exist_data) is 0):
+                return Response({"Message":"Not Liked"})
+            exist_data = like.objects.filter(user_id=data['user_id'],post_id=data['post_id']).delete()
+        except:
+            pass
+        return Response({"Message":"success"})
+
+dislike_post = dislike_post.as_view()
+
+
+#retrive post data by id
+class post_data_view(APIView):
+    def get(self,request):
+        token = request.COOKIES.get('token')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated no cookies found login again")
+        try:
+            payload =  jwt.decode(token,'secret',algorithms='HS256')
+        except jwt.ExpiredSignature:
+            raise AuthenticationFailed("The cookies Expired create new one")
+
+        data={}
+        data["post_id"]=request.data['post_id']
+
+        #user_table_detail = user_table.objects.filter(id=request.data['id']).first()
+        exist_data = post.objects.filter(id=data["post_id"])
+        return Response({"Message":exist_data})
+
+post_data = post_data_view.as_view()
 
 
 #delete all objects from table

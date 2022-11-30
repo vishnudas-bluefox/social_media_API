@@ -12,6 +12,7 @@ urlpatterns = [
     path('follow/',views.follow_user), #http://localhost:8000/api/follow/
     path('unfollow/',views.unfollow_user), #http://localhost:8000/api/unfollow
     path('post/',views.post), #http://localhost:8000/api/post
-    path('like/',views.like_post) #http://localhost:8000/api/like
-
+    path('like/',views.like_post), #http://localhost:8000/api/like
+    path('post_data/',views.post_data),
+    path('dislike/',views.dislike_post),
 ]
