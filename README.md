@@ -51,3 +51,7 @@ http://localhost:8000/api/post/
 ```
 http://localhost:8000/api/like/
 ```
+### POST api/dislike/ to dislike the posts
+```
+http://localhost:8000/api/dislike/
+```
